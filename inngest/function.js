@@ -1,5 +1,7 @@
 import { prisma } from "@/src/db.js";
-import { inngest } from "./client.js";
+import { Inngest } from "inngest";
+
+export const inngest = new Inngest({ id: "gocart-ecommerce" });
 
 // ✅ inngest function to the create a user
 export const syncUserCreation = inngest.createFunction(
