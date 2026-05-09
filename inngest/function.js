@@ -1,4 +1,4 @@
-import { prisma } from "@/src/db.js";
+import { prisma } from "@/src/db";
 import { inngest } from "./client";
 
 // ✅ inngest function to the create a user
