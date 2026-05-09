@@ -1,6 +1,6 @@
 import { serve } from "inngest/next";
 import { syncUserCreation, syncUserDeletion, syncUserUpdation } from "@/inngest/function";
-import { inngest } from "@/inngest/client";
+import { inngest } from "../../../inngest/client";
 
 
 
