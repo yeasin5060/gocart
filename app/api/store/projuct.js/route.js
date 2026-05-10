@@ -47,7 +47,7 @@ export async function POST(request) {
             return url
         }));
         
-    const product =  await prisma.product.create({
+        await prisma.product.create({
             data : {
                 name,
                 description,
@@ -59,8 +59,29 @@ export async function POST(request) {
             }
         });
 
-        return NextResponse.json({message : 'product added successfully', product})
+        return NextResponse.json({message : 'product added successfully'});
 
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({message : error.message},{status:400});
+    }
+}
+
+// get all product for a seller
+export async function GET(request) {
+    try {
+        const {userId} = getAuth(request);
+        const storeId = await authSeller(userId);
+
+        if(!storeId){
+            return NextResponse.json({message : 'not authorized'},{status:401});
+        }
+
+        const products = await prisma.product.findMany({
+            where : {storeId}
+        });
+        
+        return NextResponse.json({message : 'product get successfully' , products});
     } catch (error) {
         console.error(error);
         return NextResponse.json({message : error.message},{status:400});
