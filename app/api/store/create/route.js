@@ -42,12 +42,13 @@ export async function POST (request) {
             return NextResponse.json({message : 'username alredy taken'},{status : 400})
         }
         // image upload to imagekit
-        const buffer = Buffer.from(await image.arrayBuffer());
+        const bytes = await image.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
         const response = await imagekit.upload({
-            file : buffer,
-            fileName : image.name,
-            folder : 'logos'
+        file: buffer.toString("base64"),
+        fileName: image.name,
+        folder: "/logos",
         });
         const optimizedImage = imagekit.url({
             path : response.filePath,
