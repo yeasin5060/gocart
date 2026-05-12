@@ -9,7 +9,7 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 
 export default function AdminDashboard() {
-
+    
     const  {getToken} = useAuth();
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
 

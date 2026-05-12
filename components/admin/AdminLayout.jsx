@@ -11,7 +11,7 @@ import toast from "react-hot-toast"
 
 const AdminLayout = ({ children }) => {
 
-    const {user} = useUser();
+    const {user,isLoaded} = useUser();
     const {getToken} = useAuth();
 
 
@@ -22,7 +22,7 @@ const AdminLayout = ({ children }) => {
        try {
             const token = await getToken();
             const {data} = await axios.get('api/admin/is-admin',{headers:{Authorization : `Bearer ${token}`}});
-            
+
             if(data.status === 401){
                 toast.error(data.message)
             }
@@ -36,10 +36,10 @@ const AdminLayout = ({ children }) => {
     }
 
     useEffect(() => {
-        if(user){
+        if(user && isLoaded){
             fetchIsAdmin();
         }
-    }, [user]);
+    }, [user,isLoaded]);
 
     return loading ? (
         <Loading />

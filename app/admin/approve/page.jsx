@@ -9,7 +9,7 @@ import toast from "react-hot-toast"
 
 export default function AdminApprove() {
 
-    const {user} = useUser();
+    const {user,isLoaded} = useUser();
     const {getToken} = useAuth();
     const [stores, setStores] = useState([])
     const [loading, setLoading] = useState(true)
@@ -23,8 +23,9 @@ export default function AdminApprove() {
        } catch (error) {
             console.log(error.message);
             toast.error(error?.response?.data?.message ||error.message);
+       }finally{
+            setLoading(false)
        }
-       setLoading(false)
     }
 
     const handleApprove = async ({ storeId, status }) => {
@@ -40,10 +41,13 @@ export default function AdminApprove() {
     }
 
     useEffect(() => {
-        if(user){
-            fetchStores()
-        }
-    }, [user])
+    if (!isLoaded) return;
+
+    if (user) {
+        fetchStores();
+    }
+
+}, [isLoaded, user]);
 
     //console.log(stores);
     
