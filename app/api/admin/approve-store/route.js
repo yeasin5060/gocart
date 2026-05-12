@@ -40,7 +40,7 @@ export async function GET(request) {
         const isAdmin = await authAdmin(userId);
 
         if(!isAdmin){
-            return NextResponse.json({message : 'not authorized'},{status:401});
+            return NextResponse.json({message : 'not authorized' , status:401});
         }
         
         const stores = await prisma.store.findMany({
