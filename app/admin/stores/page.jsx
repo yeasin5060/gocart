@@ -28,13 +28,22 @@ export default function AdminStores() {
     }
 
     const toggleIsActive = async (storeId) => {
-        // Logic to toggle the status of a store
-
+        try {
+            const token = await getToken();
+            const {data} = await axios.post('/api/admin/toggle-store',{storeId},{headers:{Authorization : `Bearer ${token}`}});
+            await fetchStores();
+            toast.success(data.message);
+        } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+        }
     }
 
     useEffect(() => {
-        fetchStores()
-    }, [])
+       if(user){
+            fetchStores()
+       }
+    }, [user])
 
     return !loading ? (
         <div className="text-slate-500 mb-28">
