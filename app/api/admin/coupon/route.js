@@ -48,3 +48,21 @@ export async function DELETE(request) {
     }
 }
 
+//get all coupon
+export async function GET(request) {
+    try {
+        const {userId} = getAuth(request);
+        const isAdmin = await authAdmin(userId);
+        if(!isAdmin){
+            return NextResponse.json({message : 'not authorized', status:401});
+        }
+
+        const coupon = await prisma.coupon.findMany({});
+
+        return NextResponse.json({message : 'coupon get successfully' , coupon});
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({message : error.message},{status:400});
+    }
+}
+
