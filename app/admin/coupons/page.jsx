@@ -56,14 +56,25 @@ export default function AdminCoupons() {
     }
 
     const deleteCoupon = async (code) => {
-        // Logic to delete a coupon
+        try {
+            const confirm = window.confirm('Are you sure you want to delete this coupon');
+            if(!confirm) return ;
 
-
+            const token = await getToken();
+            const {data} = await axios.delete(`/api/admin/coupon?code=${code}`,{headers:{Authorization : `Bearer ${token}`}});
+            await fetchCoupons();
+            toast.success(data.message);
+        } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+        }
     }
 
     useEffect(() => {
-        fetchCoupons();
-    }, [])
+        if(user){
+            fetchCoupons();
+        }
+    }, [user])
 
     return (
         <div className="text-slate-500 mb-40">
