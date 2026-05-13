@@ -4,9 +4,13 @@ import { format } from "date-fns"
 import toast from "react-hot-toast"
 import { DeleteIcon } from "lucide-react"
 import { couponDummyData } from "@/assets/assets"
+import { useAuth, useUser } from "@clerk/nextjs"
+import axios from "axios"
 
 export default function AdminCoupons() {
 
+    const {getToken} = useAuth();
+    const {user} = useUser();
     const [coupons, setCoupons] = useState([])
 
     const [newCoupon, setNewCoupon] = useState({
@@ -20,13 +24,21 @@ export default function AdminCoupons() {
     })
 
     const fetchCoupons = async () => {
-        setCoupons(couponDummyData)
+        try {
+            const token = await getToken();
+            const {data} = await axios.get('/api/admin/coupon',{headers:{Authorization : `Bearer ${token}`}})
+            setCoupons(data.coupons);
+        } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+        }
     }
 
     const handleAddCoupon = async (e) => {
         e.preventDefault()
-        // Logic to add a coupon
-
+        
+        const formData = new FormData();
+        formData.append
 
     }
 

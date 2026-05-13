@@ -57,9 +57,9 @@ export async function GET(request) {
             return NextResponse.json({message : 'not authorized', status:401});
         }
 
-        const coupon = await prisma.coupon.findMany({});
+        const coupons = await prisma.coupon.findMany({});
 
-        return NextResponse.json({message : 'coupon get successfully' , coupon});
+        return NextResponse.json({message : 'coupon get successfully' , coupons});
     } catch (error) {
         console.error(error);
         return NextResponse.json({message : error.message},{status:400});
