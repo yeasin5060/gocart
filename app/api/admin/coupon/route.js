@@ -26,3 +26,25 @@ export async function POST(request) {
         return NextResponse.json({message : error.message},{status:400});
     }
 }
+
+//deleted coupon / api/coupon?id = couponId
+export async function DELETE(request) {
+    try {
+        const {userId} = getAuth(request);
+        const isAdmin = await authAdmin(userId);
+        if(!isAdmin){
+            return NextResponse.json({message : 'not authorized', status:401});
+        }
+
+        const {searchParams} =  request.nextUrl;
+        const code = searchParams.get('code');
+
+        await prisma.coupon.delete({where: {code}});
+       
+        return NextResponse.json({message : 'coupon deleted successfully'});
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({message : error.message},{status:400});
+    }
+}
+
