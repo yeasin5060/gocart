@@ -28,3 +28,24 @@ export async function POST(request) {
 }
 
 // get all order for a seller
+export async function GET(request){
+    try {
+        const {userId} = getAuth(request);
+        const storeId = await authSeller(userId);
+
+        if(!storeId){
+            return NextResponse.json({message : 'store not found'},{status:401});
+        }
+
+        const orders = await prisma.order.findMany({
+            where : {storeId},
+            include : {user : true , address : true , orderItems : {include : {product : true}}},
+            orderBy : {createdAt : 'desc'}
+        });
+
+        return NextResponse.json({message : 'all order get successfully',orders});
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({message : error.message},{status:400});
+    }
+}
