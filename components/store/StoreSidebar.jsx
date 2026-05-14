@@ -3,10 +3,11 @@ import { usePathname } from "next/navigation"
 import { HomeIcon, LayoutListIcon, SquarePenIcon, SquarePlusIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useUser } from "@clerk/nextjs"
 
 const StoreSidebar = ({storeInfo}) => {
 
-    const pathname = usePathname()
+    const pathname = usePathname();
 
     const sidebarLinks = [
         { name: 'Dashboard', href: '/store', icon: HomeIcon },

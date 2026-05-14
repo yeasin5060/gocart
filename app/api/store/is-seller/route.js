@@ -11,7 +11,7 @@ export async function GET(request) {
         const isSeller = await authSeller(userId);
 
         if(!isSeller){
-            return NextResponse.json({message : 'not authorized'},{status:401});
+            return NextResponse.json({message : 'Seller not approved'},{status:401});
         }
 
         const storeInfo = await prisma.store.findUnique({

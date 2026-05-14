@@ -1,4 +1,5 @@
 import { prisma } from "@/src/db"
+import { NextResponse } from "next/server";
 
 const  authSeller = async (userId) => {
     try {
