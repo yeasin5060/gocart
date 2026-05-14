@@ -17,3 +17,20 @@ export async function POST(request){
         return NextResponse.json({message : error.message},{status:400});
     }
 }
+
+//get user cart
+export async function GET(request){
+    try {
+        const {userId} = getAuth(request);
+        
+        const user = await prisma.user.findUnique({
+            where : {id : userId}
+        });
+
+       
+        return NextResponse.json({user,message : 'get user cart successfully' ,status : 200});
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({message : error.message},{status:400});
+    }
+}
