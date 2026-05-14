@@ -28,7 +28,16 @@ export default function StoreManageProducts() {
     }
 
     const toggleStock = async (productId) => {
-        
+        try {
+            const token = await getToken();
+            const {data} = await axios.post('/api/store/stock-toggle',{productId},{headers:{Authorization : `Bearer ${token}`}});
+            setProducts(prevProducts => prevProducts.map(product => productId.id === productId ? {...product, inStock : !product.inStock} : product));
+
+            toast.success(data.message);
+        } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+        }
     }
 
     useEffect(() => {
