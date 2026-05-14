@@ -2,8 +2,13 @@
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
 import { orderDummyData } from "@/assets/assets"
+import { useAuth, useUser } from "@clerk/nextjs"
+import axios from "axios"
+import toast from "react-hot-toast"
 
 export default function StoreOrders() {
+    const {getToken} = useAuth();
+    const {user} = useUser();
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const [selectedOrder, setSelectedOrder] = useState(null)
@@ -11,8 +16,16 @@ export default function StoreOrders() {
 
 
     const fetchOrders = async () => {
-       setOrders(orderDummyData)
-       setLoading(false)
+       try {
+            const token = await getToken();
+            const {data} = await axios.get('/api/store/orders',{headers:{Authorization : `Bearer ${token}`}});
+            setOrders(data.orders);
+       } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+       }finally{
+            setLoading(false)
+       }
     }
 
     const updateOrderStatus = async (orderId, status) => {
