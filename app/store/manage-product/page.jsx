@@ -3,29 +3,39 @@ import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import Image from "next/image"
 import Loading from "@/components/Loading"
-import { productDummyData } from "@/assets/assets"
+import { useAuth, useUser } from "@clerk/nextjs"
+import axios from "axios"
 
 export default function StoreManageProducts() {
 
+    const {getToken} = useAuth();
+    const {user} = useUser();
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
 
     const [loading, setLoading] = useState(true)
     const [products, setProducts] = useState([])
 
     const fetchProducts = async () => {
-        setProducts(productDummyData)
-        setLoading(false)
+       try {
+           const token = await getToken();
+           const {data} = await axios.get('/api/store/product',{headers:{Authorization : `Bearer ${token}`}});
+           setProducts(data.products.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)));
+           setLoading(false);
+        } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+        }
     }
 
     const toggleStock = async (productId) => {
-        // Logic to toggle the stock of a product
-
-
+        
     }
 
     useEffect(() => {
+        if(user){
             fetchProducts()
-    }, [])
+        }
+    }, [user])
 
     if (loading) return <Loading />
 

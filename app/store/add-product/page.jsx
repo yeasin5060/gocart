@@ -43,8 +43,10 @@ export default function StoreAddProduct() {
             formData.append('category',productInfo.category);
 
             //adding images to formdata
-            Object.keys(images).forEach((key)=>{
-                images[key] && formData.append('image',images[key]);
+            Object.keys(images).forEach((key) => {
+                if (images[key]) {
+                    formData.append("images", images[key]);
+                }
             });
 
             const token = await getToken();
