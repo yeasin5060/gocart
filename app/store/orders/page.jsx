@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
-import { orderDummyData } from "@/assets/assets"
 import { useAuth, useUser } from "@clerk/nextjs"
 import axios from "axios"
 import toast from "react-hot-toast"
@@ -29,8 +28,15 @@ export default function StoreOrders() {
     }
 
     const updateOrderStatus = async (orderId, status) => {
-        // Logic to update the status of an order
-
+        try {
+            const token = await getToken();
+            const {data} = await axios.post('/api/store/orders',{orderId,status},{headers:{Authorization : `Bearer ${token}`}});
+            setOrders(prev => prev.map(order => order.id === orderId ? {...order , status} : order))
+            toast.success(data.message);
+       } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+       }
 
     }
 
