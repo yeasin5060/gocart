@@ -1,12 +1,15 @@
 'use client'
 import { assets } from "@/assets/assets"
+import { useAuth } from "@clerk/nextjs"
+import axios from "axios"
 import Image from "next/image"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 
 export default function StoreAddProduct() {
 
-    const categories = ['Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Health', 'Toys & Games', 'Sports & Outdoors', 'Books & Media', 'Food & Drink', 'Hobbies & Crafts', 'Others']
+    const {getToken} = useAuth();
+    const categories = ['Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Health', 'Decoration' , 'Toys & Games', 'Sports & Outdoors', 'Books & Media', 'Food & Drink', 'Hobbies & Crafts', 'Others']
 
     const [images, setImages] = useState({ 1: null, 2: null, 3: null, 4: null })
     const [productInfo, setProductInfo] = useState({
@@ -25,8 +28,46 @@ export default function StoreAddProduct() {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        // Logic to add a product
-        
+       try {
+            // if no imagge are uploaded than return
+            if(!images[1] && !images[2] && !images[3] && !images[4]){
+                return toast.error('Please upload at least one image');
+            }
+            setLoading(true);
+
+            const formData = new FormData();
+            formData.append('name',productInfo.name);
+            formData.append('description',productInfo.description);
+            formData.append('mrp',productInfo.mrp);
+            formData.append('price',productInfo.price);
+            formData.append('category',productInfo.category);
+
+            //adding images to formdata
+            Object.keys(images).forEach((key)=>{
+                images[key] && formData.append('image',images[key]);
+            });
+
+            const token = await getToken();
+            const {data} = await axios.post('/api/store/product',formData,{headers:{Authorization : `Bearer ${token}`}});
+            toast.success(data.message);
+
+            //reset form
+            setProductInfo({
+                name: "",
+                description: "",
+                mrp: 0,
+                price: 0,
+                category: "",
+            });
+
+             //reset images
+             setImages({ 1: null, 2: null, 3: null, 4: null });
+       } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+       } finally {
+            setLoading(false)
+       }
     }
 
 
