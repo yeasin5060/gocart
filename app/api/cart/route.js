@@ -1,5 +1,6 @@
 import { prisma } from "@/src/db";
 import { NextResponse } from "next/server";
+import { getAuth } from "@clerk/nextjs/server";
 
 //update user cart
 export async function POST(request){
