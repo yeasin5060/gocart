@@ -4,7 +4,7 @@ import AddressModal from './AddressModal';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import {Show ,useAuth } from '@clerk/nextjs';
+import {useAuth } from '@clerk/nextjs';
 
 const OrderSummary = ({ totalPrice, items }) => {
 
@@ -105,9 +105,18 @@ const OrderSummary = ({ totalPrice, items }) => {
             </div>
             <div className='flex justify-between py-4'>
                 <p>Total:</p>
-                <p className='font-medium text-right'>
-                    <Show when="plan:plus" fallback = {`${currency}${coupon ? (totalPrice + 5 - (coupon.discount / 100 * totalPrice)).toFixed(2) : (totalPrice + 5).toLocaleString()}`}>
-                    </Show>
+                <p className="font-medium text-right">
+                    {has({ plan: "plus" })
+                        ? `${currency}${
+                            coupon
+                            ? (totalPrice - (coupon.discount / 100) * totalPrice).toFixed(2)
+                            : totalPrice.toLocaleString()
+                        }`
+                        : `${currency}${
+                            coupon
+                            ? (totalPrice + 5 - (coupon.discount / 100) * totalPrice).toFixed(2)
+                            : (totalPrice + 5).toLocaleString()
+                    }`}
                 </p>
             </div>
             <button onClick={e => toast.promise(handlePlaceOrder(e), { loading: 'placing Order...' })} className='w-full bg-slate-700 text-white py-2.5 rounded hover:bg-slate-900 active:scale-95 transition-all'>Place Order</button>
