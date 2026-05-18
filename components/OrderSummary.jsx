@@ -4,14 +4,16 @@ import AddressModal from './AddressModal';
 import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import {useAuth } from '@clerk/nextjs';
+import {useAuth, useUser } from '@clerk/nextjs';
+import axios from 'axios';
 
 const OrderSummary = ({ totalPrice, items }) => {
 
-    const { has } = useAuth();
+    const { has,getToken } = useAuth();
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$';
 
     const router = useRouter();
+    const {user} = useUser();
 
     const addressList = useSelector(state => state.address.list);
 
@@ -23,7 +25,18 @@ const OrderSummary = ({ totalPrice, items }) => {
 
     const handleCouponCode = async (event) => {
         event.preventDefault();
-        
+        try {
+            if(!user){
+                return toast.error('please login to  proceed');
+            }
+            const token = await getToken();
+            const {data} = await axios.post('/api/coupon',{code : couponCodeInput},{headers:{Authorization : `Bearer ${token}`}});
+            setCoupon(data.coupon);
+            toast.success('coupon applied');
+        } catch (error) {
+            console.log(error.message);
+            toast.error(error?.response?.data?.message ||error.message);
+        }
     }
 
     const handlePlaceOrder = async (e) => {

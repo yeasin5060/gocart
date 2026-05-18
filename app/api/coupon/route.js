@@ -1,11 +1,11 @@
 import { prisma } from "@/src/db";
-import { useAuth } from "@clerk/nextjs/server";
+import { getAuth} from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 // verify coupon
 export async function POST(request) {
     try {
-        const {userId,has} = useAuth(request);
+        const {userId,has} = getAuth(request);
         const {code} = await request.json();
 
         const coupon = await prisma.coupon.findUnique({
@@ -15,7 +15,7 @@ export async function POST(request) {
         });
 
         if(!coupon){
-            return NextResponse.json({message : 'Coupon not fount', status : 404});
+            return NextResponse.json({message : 'Coupon not fount'},{status : 404});
         }
 
         if(coupon.forNewUser){
@@ -24,14 +24,14 @@ export async function POST(request) {
             });
 
             if(userOrders.length > 0){
-                return NextResponse.json({message : 'Coupon vailid for new user', status : 400});
+                return NextResponse.json({message : 'Coupon vailid for new user'},{status : 400});
             }
         }
 
         if(coupon.forMember){
             const hasPlanPlus = has({plan:'plus'});
             if(!hasPlanPlus){
-                return NextResponse.json({message : 'Coupon vailid for member only', status : 400});
+                return NextResponse.json({message : 'Coupon vailid for member only'},{status : 400});
             }
         }
 
