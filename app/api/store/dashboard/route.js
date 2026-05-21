@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 export async function GET(request) {
     try {
         const {userId} = getAuth(request);
-        const {storeId} = await authSeller(userId);
+        const storeId = await authSeller(userId);
 
         //get all orders for seller
         const orders = await prisma.order.findMany({
