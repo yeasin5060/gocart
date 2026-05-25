@@ -1,6 +1,7 @@
 import authSeller from "@/middlewares/authSeller";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { openai } from "@/configs/openai";
 
 
 async function main (base64Image, mimeType) {
@@ -25,17 +26,35 @@ async function main (base64Image, mimeType) {
         "content": [
             {
             "type": "text",
-            "text": "What is in this image?",
+            "text": "Analyze this image and return name + description.",
             },
             {
             "type": "image_url",
             "image_url": {
-                "url": `data:image/jpeg;base64,${base64Image}`
+                "url": `data:${mimeType};base64,${base64Image}`
             },
             },
         ],
-        }
-  ];
+    }];
+
+    const response = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages,
+    });
+
+    const raw = response.choices[0].message.content
+
+        //remove ``` json or ``` wrapper if present
+    const cleaned = raw.replace(/```json ```/g, "").trim();
+
+    let parsed;
+    try {
+        parsed = JSON.parse(cleaned);
+    } catch (error) {
+        throw new Error('AI did not return valid Json')
+    }
+
+    return parsed;
 }
 
 
