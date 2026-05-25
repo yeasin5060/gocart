@@ -68,6 +68,9 @@ export async function POST (request) {
         }
 
         const {base64Image,mimeType} = await request.json();
+        const result = await main(base64Image,mimeType);
+
+        return NextResponse.json({...result});
     } catch (error) {
         console.error(error);
         return NextResponse.json({message : error.message},{status:400});
